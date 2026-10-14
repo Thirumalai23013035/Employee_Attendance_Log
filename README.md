@@ -132,10 +132,6 @@ Use a separate test database when loading sample data. Inspect the seed script b
 - `REVIEW.md` — Review of the starter implementation.
 - `DECISIONS.md` — Design decisions and trade-offs.
 
-## Known Limitations
-
-Document any incomplete requirements, untested edge cases, or known bugs here. Do not claim that a feature is fully verified unless it has been tested.
-
 ## Security
 
 - Keep credentials in a local `.env` file.
