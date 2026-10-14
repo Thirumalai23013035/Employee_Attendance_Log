@@ -1,8 +1,5 @@
 # Design Decisions
 
-
-# Design Decisions
-
 ### 1. Which indexes did you create, and why?
 
 I use a unique index on `employees.emp_code` to prevent duplicate employee identities. For attendance, I use a unique compound index on `(emp_code, date)` to enforce one record per employee per day. Additional indexes support attendance filtering, sorting, pagination, and the analytics queries. All indexes are created idempotently at application startup.
