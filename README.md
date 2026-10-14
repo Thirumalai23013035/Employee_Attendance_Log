@@ -1,50 +1,148 @@
 # Employee Attendance & Analytics API
 
-FastAPI + MongoDB implementation for the HROne Software Engineer Trainee assignment.
+A REST API for employee management, attendance tracking, manual attendance corrections, and analytics, built using **Python, FastAPI, and MongoDB**.
+
+## Features
+
+- Employee creation and listing with pagination and filtering.
+- Attendance punch-in and punch-out.
+- Late-arrival, work-hours, and overtime calculations.
+- Manual attendance corrections with audit history.
+- Monthly employee attendance analytics.
+- Department attendance summaries and trends.
+- Late-arrival leaderboard.
+- MongoDB indexes and query-plan inspection.
+- API documentation through Swagger UI.
+
+## Technology Stack
+
+- Python 3.11+
+- FastAPI
+- MongoDB 6.0+
+- PyMongo
+- Pydantic
+- Pytest
+
+## Project Structure
+
+```text
+hrone-attendance-api/
+├── app/
+│   ├── __init__.py
+│   └── main.py
+├── tests/
+├── sample_data/
+├── openapi.yaml
+├── requirements.txt
+├── README.md
+├── REVIEW.md
+├── DECISIONS.md
+├── DATA_MODEL.md
+└── .env.example
+```
+
+## Prerequisites
+
+- Python 3.11 or newer
+- MongoDB 6.0 or newer, locally or through MongoDB Atlas
+- Git
 
 ## Setup
 
-Requires Python 3.11+ and MongoDB 6.0+ (Atlas M0 is fine).
+Clone the repository:
+
+```bash
+git clone https://github.com/Thirumalai23013035/Employee_Attendance_Log.git
+cd Employee_Attendance_Log
+```
+
+Create and activate a virtual environment.
+
+**Windows PowerShell:**
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
 ```
 
-Copy `.env.example` to `.env` and set `MONGO_URI` and `MONGO_DB`. Never commit `.env` or credentials.
-The application uses the exact environment variable names `MONGO_URI` and `MONGO_DB`.
+Install dependencies:
 
-```powershell
-python -m uvicorn app.main:app --port 8000
+```bash
+pip install -r requirements.txt
 ```
 
-Optional sample data: `sample_seed.py` **deletes and replaces** both `employees` and
-`attendance_logs`. Do not run it against a database containing data you need. To seed a
-separate disposable database, set `MONGO_DB=hrone_attendance_test` and
-`SEED_SAMPLE_DATA=true` in the shell environment, then run `python sample_seed.py`.
-The script refuses to run unless the opt-in flag is set.
+Create a local `.env` file based on `.env.example` and configure your MongoDB connection:
 
-Open `http://127.0.0.1:8000/docs` for interactive API docs and `http://127.0.0.1:8000/health` to verify readiness.
+```env
+MONGO_URI="your_mongodb_connection_string"
+MONGO_DB="hrone_attendance"
+```
 
-## Implementation notes
+Never commit `.env` or expose database credentials.
 
-- All application routes and pipeline builders are in `app/main.py`, as required by the candidate kit.
-- Indexes are created idempotently at startup.
-- Analytics calculations use MongoDB aggregation pipelines.
-- `sample_seed.py` replaces the two collections' contents with the supplied sample data; use it only against a development database.
-- The API uses `MONGO_URI` and `MONGO_DB`; environment variables override `.env` values.
+## Run the Application
 
-## Tests
+```bash
+uvicorn app.main:app --reload --port 8000
+```
 
-Install dependencies, then run:
+The API will be available at:
 
-```powershell
+- API: http://127.0.0.1:8000
+- Swagger UI: http://127.0.0.1:8000/docs
+- OpenAPI JSON: http://127.0.0.1:8000/openapi.json
+
+## API Endpoint Overview
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/health` | Health check |
+| POST | `/employees` | Create an employee |
+| GET | `/employees` | List employees |
+| POST | `/attendance/punch-in` | Record punch-in |
+| POST | `/attendance/punch-out` | Record punch-out |
+| GET | `/attendance` | Retrieve attendance records |
+| PATCH | `/attendance/{emp_code}/{date}` | Correct attendance |
+| GET | `/analytics/employees/{emp_code}/monthly` | Monthly employee analytics |
+| GET | `/analytics/departments/summary` | Department summary |
+| GET | `/analytics/leaderboard/late` | Late-arrival leaderboard |
+| GET | `/analytics/departments/{department}/trend` | Department attendance trend |
+| GET | `/admin/explain/{endpoint}` | Inspect supported query plans |
+
+Refer to `openapi.yaml` and Swagger UI for exact request fields, parameters, response schemas, and status codes.
+
+## Run Tests
+
+```bash
 python -m pytest -q
 ```
 
-The included tests cover calculation boundaries and the required route surface without requiring a live database. Run integration tests against a disposable MongoDB database before submission.
+Passing the included tests does not by itself guarantee full compliance. Verify the API contract, business rules, aggregation results, and MongoDB integration before submission.
 
-## Before submission
+## Database Notes
 
-Test every endpoint against `openapi.yaml`, especially simultaneous punch-in/punch-out/regularization requests, overnight shifts, joiners, ties in the leaderboard, and trend ranges with no attendance logs. The supplied sample dataset is not sufficient to prove correctness on the hidden dataset. The grading environment may use MongoDB 6.0+, so validate aggregation operators on a matching MongoDB version.
+The application uses MongoDB for employee records and attendance logs. Database and collection names are configured through environment variables. Indexes should be created idempotently.
+
+Use a separate test database when loading sample data. Inspect the seed script before running it, especially if it deletes or replaces existing records.
+
+## Documentation
+
+- `openapi.yaml` — API contract.
+- `DATA_MODEL.md` — Database design.
+- `REVIEW.md` — Review of the starter implementation.
+- `DECISIONS.md` — Design decisions and trade-offs.
+
+## Known Limitations
+
+Document any incomplete requirements, untested edge cases, or known bugs here. Do not claim that a feature is fully verified unless it has been tested.
+
+## Security
+
+- Keep credentials in a local `.env` file.
+- Never commit secrets or real connection strings.
+- Do not expose personal employee information in public sample data.
+- Use a dedicated test database for testing.
+
+## Assignment
+
+This project was developed for the HROne Software Engineer Trainee technical assignment.
