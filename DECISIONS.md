@@ -12,9 +12,9 @@ Both requests may initially find no attendance record. MongoDB's unique compound
 
 Employees with equal late-arrival totals share the same rank. The next rank is skipped, such as `1, 2, 2, 4`. Ranking is calculated before applying the requested limit, and tied employees are ordered by `emp_code`.
 
-### 4. How does the department summary count employees without logs?
+## 4. How does the department summary count employees without logs?
 
-The summary includes employees who joined on or before the period's end, even when they have no attendance records. Employees who joined later are excluded. The aggregation joins employee and attendance data without dropping employees who have no logs.
+The summary includes employees who joined on or before the period's end, even when they have no attendance records. Employees who joined later are excluded. The aggregation joins employee and attendance of data without dropping employees who have no logs.
 
 ### 5. What would change for 100 times the data?
 
