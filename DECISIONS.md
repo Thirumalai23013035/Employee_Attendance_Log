@@ -1,5 +1,30 @@
 # Design Decisions
 
+
+# Design Decisions
+
+### 1. Which indexes did you create, and why?
+
+I use a unique index on `employees.emp_code` to prevent duplicate employee identities. For attendance, I use a unique compound index on `(emp_code, date)` to enforce one record per employee per day. Additional indexes support attendance filtering, sorting, pagination, and the analytics queries. All indexes are created idempotently at application startup.
+
+### 2. What happens when two identical punch-ins arrive simultaneously?
+
+Both requests may initially find no attendance record. MongoDB's unique compound index ensures only one insert succeeds. The successful request returns `201 Created`; the losing request catches the duplicate-key error and returns `409 Conflict`.
+
+### 3. What does the leaderboard return for a tie at the cutoff?
+
+Employees with equal late-arrival totals share the same rank. The next rank is skipped, such as `1, 2, 2, 4`. Ranking is calculated before applying the requested limit, and tied employees are ordered by `emp_code`.
+
+### 4. How does the department summary count employees without logs?
+
+The summary includes employees who joined on or before the period's end, even when they have no attendance records. Employees who joined later are excluded. The aggregation joins employee and attendance data without dropping employees who have no logs.
+
+### 5. What would change for 100 times the data?
+
+I would examine execution statistics, query selectivity, index usage, and aggregation costs. I would optimise compound indexes, reduce unnecessary document processing, and consider workload isolation or pre-aggregated summaries if justified by measured performance.
+
+## Detailed explanation
+
 ## 1. Technology Stack
 
 **Decision:** Use Python, FastAPI, and PyMongo with MongoDB.
